@@ -1,7 +1,7 @@
 package engineio
 
 import (
-	websocket2 "github.com/gorilla/websocket"
+	websocket2 "github.com/jeppeter/websocket"
 	"io"
 	"net/http"
 	"sync"

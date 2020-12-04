@@ -9,7 +9,7 @@ import (
 
 	"github.com/jeppeter/go-engine.io/base"
 
-	"github.com/gorilla/websocket"
+	"github.com/jeppeter/websocket"
 )
 
 // DialError is the error when dialing to a server. It saves Response from
