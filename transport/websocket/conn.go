@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/googollee/go-engine.io/base"
-	"github.com/googollee/go-engine.io/packet"
 	"github.com/gorilla/websocket"
+	"github.com/jeppeter/go-engine.io/base"
+	"github.com/jeppeter/go-engine.io/packet"
 )
 
 // conn implements base.Conn

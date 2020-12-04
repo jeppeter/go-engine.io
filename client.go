@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/googollee/go-engine.io/base"
-	"github.com/googollee/go-engine.io/transport"
+	"github.com/jeppeter/go-engine.io/base"
+	"github.com/jeppeter/go-engine.io/transport"
 )
 
 // Dialer is dialer configure.
