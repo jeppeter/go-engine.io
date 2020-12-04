@@ -1,6 +1,7 @@
 package packet
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/jeppeter/go-engine.io/base"
@@ -17,6 +18,7 @@ func newDecoder(r FrameReader) *decoder {
 }
 
 func (e *decoder) NextReader() (base.FrameType, base.PacketType, io.ReadCloser, error) {
+	fmt.Println("decoder.go NextReader")
 	ft, r, err := e.r.NextReader()
 	if err != nil {
 		return 0, 0, nil, err

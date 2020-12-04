@@ -176,6 +176,7 @@ func (p *Payload) FlushOut(w io.Writer) error {
 // Pause doesn't effect to NextReader. NextReader should wait till resumed
 // and next FeedIn.
 func (p *Payload) NextReader() (base.FrameType, base.PacketType, io.ReadCloser, error) {
+	fmt.Println("payload.go NextReader")
 	ft, pt, r, err := p.decoder.NextReader()
 	return ft, pt, r, err
 }

@@ -1,6 +1,7 @@
 package engineio
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -74,6 +75,7 @@ func (s *session) Close() error {
 // When finished writing, the caller MUST Close the ReadCloser to unlock the
 // connection's FramerReader.
 func (s *session) NextReader() (FrameType, io.ReadCloser, error) {
+	fmt.Println("session.go NextReader")
 	for {
 		ft, pt, r, err := s.nextReader()
 		if err != nil {
