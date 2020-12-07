@@ -26,6 +26,26 @@ func newWrapper(conn *websocket.Conn) wrapper {
 	}
 }
 
+func (w wrapper) NextReaderTimeout(mills int) (base.FrameType, io.ReadCloser, error) {
+	fmt.Println("websocket/wrapper.go NextReaderTimeout")
+	w.readLocker.Lock()
+	typ, r, err := w.Conn.NextReaderTimeout(mills)
+	fmt.Println("after websocket/wrapper.go NextReaderTimeout")
+	// The wrapper remains locked until the returned ReadCloser is Closed.
+	if err != nil {
+		w.readLocker.Unlock()
+		return 0, nil, err
+	}
+	switch typ {
+	case websocket.TextMessage:
+		return base.FrameString, newRcWrapper(w.readLocker, r), nil
+	case websocket.BinaryMessage:
+		return base.FrameBinary, newRcWrapper(w.readLocker, r), nil
+	}
+	w.readLocker.Unlock()
+	return 0, nil, transport.ErrInvalidFrame
+}
+
 func (w wrapper) NextReader() (base.FrameType, io.ReadCloser, error) {
 	fmt.Println("websocket/wrapper.go NextReader")
 	w.readLocker.Lock()
