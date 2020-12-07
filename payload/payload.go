@@ -1,7 +1,6 @@
 package payload
 
 import (
-	"fmt"
 	"io"
 	"math"
 	"sync"
@@ -170,7 +169,6 @@ func (p *Payload) FlushOut(w io.Writer) error {
 }
 
 func (p *Payload) NextReaderTimeout(mills int) (base.FrameType, base.PacketType, io.ReadCloser, error) {
-	fmt.Println("payload.go NextReaderTimeout")
 	ft, pt, r, err := p.decoder.NextReaderTimeout(mills)
 	return ft, pt, r, err
 }
@@ -182,7 +180,6 @@ func (p *Payload) NextReaderTimeout(mills int) (base.FrameType, base.PacketType,
 // Pause doesn't effect to NextReader. NextReader should wait till resumed
 // and next FeedIn.
 func (p *Payload) NextReader() (base.FrameType, base.PacketType, io.ReadCloser, error) {
-	fmt.Println("payload.go NextReader")
 	ft, pt, r, err := p.decoder.NextReader()
 	return ft, pt, r, err
 }
@@ -232,7 +229,6 @@ func (p *Payload) Pause() {
 // Resume resumes the payload.
 // It can call in multi-goroutine.
 func (p *Payload) Resume() {
-	fmt.Println("resume")
 	p.pauser.Resume()
 }
 

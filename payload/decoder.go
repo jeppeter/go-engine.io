@@ -3,7 +3,6 @@ package payload
 import (
 	"bufio"
 	"encoding/base64"
-	"fmt"
 	"io"
 	"io/ioutil"
 
@@ -32,7 +31,6 @@ type decoder struct {
 }
 
 func (d *decoder) NextReaderTimeout(mills int) (base.FrameType, base.PacketType, io.ReadCloser, error) {
-	fmt.Println("payload decoder.go NextReaderTimeout")
 	if d.rawReader == nil {
 		r, supportBinary, err := d.feeder.getReader()
 		if err != nil {
@@ -51,7 +49,6 @@ func (d *decoder) NextReaderTimeout(mills int) (base.FrameType, base.PacketType,
 }
 
 func (d *decoder) NextReader() (base.FrameType, base.PacketType, io.ReadCloser, error) {
-	fmt.Println("payload decoder.go NextReader")
 	if d.rawReader == nil {
 		r, supportBinary, err := d.feeder.getReader()
 		if err != nil {
