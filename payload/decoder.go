@@ -31,6 +31,25 @@ type decoder struct {
 	b64Reader     io.Reader
 }
 
+func (d *decoder) NextReaderTimeout(mills int) (base.FrameType, base.PacketType, io.ReadCloser, error) {
+	fmt.Println("payload decoder.go NextReaderTimeout")
+	if d.rawReader == nil {
+		r, supportBinary, err := d.feeder.getReader()
+		if err != nil {
+			return 0, 0, nil, err
+		}
+		br, ok := r.(byteReader)
+		if !ok {
+			br = bufio.NewReader(r)
+		}
+		if err := d.setNextReader(br, supportBinary); err != nil {
+			return 0, 0, nil, d.sendError(err)
+		}
+	}
+
+	return d.ft, d.pt, d, nil
+}
+
 func (d *decoder) NextReader() (base.FrameType, base.PacketType, io.ReadCloser, error) {
 	fmt.Println("payload decoder.go NextReader")
 	if d.rawReader == nil {

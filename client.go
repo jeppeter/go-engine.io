@@ -110,6 +110,25 @@ func (c *client) Close() error {
 	return c.conn.Close()
 }
 
+func (c *client) NextReaderTimeout(mills int) (FrameType, io.ReadCloser, error) {
+	for {
+		ft, pt, r, err := c.conn.NextReaderTimeout(mills)
+		if err != nil {
+			return 0, nil, err
+		}
+		switch pt {
+		case base.PONG:
+			c.conn.SetReadDeadline(time.Now().Add(c.params.PingInterval + c.params.PingTimeout))
+		case base.CLOSE:
+			c.Close()
+			return 0, nil, io.EOF
+		case base.MESSAGE:
+			return FrameType(ft), r, nil
+		}
+		r.Close()
+	}
+}
+
 func (c *client) NextReader() (FrameType, io.ReadCloser, error) {
 	fmt.Println("client.go NextReader")
 	for {

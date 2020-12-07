@@ -169,6 +169,12 @@ func (p *Payload) FlushOut(w io.Writer) error {
 	}
 }
 
+func (p *Payload) NextReaderTimeout(mills int) (base.FrameType, base.PacketType, io.ReadCloser, error) {
+	fmt.Println("payload.go NextReaderTimeout")
+	ft, pt, r, err := p.decoder.NextReaderTimeout(mills)
+	return ft, pt, r, err
+}
+
 // NextReader returns a reader for next frame.
 // NextReader and SetReadDeadline needs be called sync.
 //
