@@ -22,6 +22,7 @@ const (
 // Conn is connection.
 type Conn interface {
 	ID() string
+	NextReaderTimeout(mills int) (FrameType, io.ReadCloser, error)
 	NextReader() (FrameType, io.ReadCloser, error)
 	NextWriter(typ FrameType) (io.WriteCloser, error)
 	Close() error

@@ -18,7 +18,6 @@ func newDecoder(r FrameReader) *decoder {
 }
 
 func (e *decoder) NextReaderTimeout(mills int) (base.FrameType, base.PacketType, io.ReadCloser, error) {
-	fmt.Println("decoder.go NextReaderTimeout")
 	ft, r, err := e.r.NextReaderTimeout(mills)
 	if err != nil {
 		return 0, 0, nil, err

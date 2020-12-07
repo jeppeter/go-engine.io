@@ -120,6 +120,60 @@ func (s *session) NextReader() (FrameType, io.ReadCloser, error) {
 	}
 }
 
+// NextReaderTimeout attempts to obtain a ReadCloser from the session's connection.
+// When finished writing, the caller MUST Close the ReadCloser to unlock the
+// connection's FramerReader.
+func (s *session) NextReaderTimeout(mills int) (FrameType, io.ReadCloser, error) {
+	var neterr net.Error
+	var ok bool
+	for {
+		ft, pt, r, err := s.nextReaderTimeout(mills)
+		if err != nil {
+			neterr, ok = err.(net.Error)
+			if !ok || !neterr.Timeout() {
+				/*we do not close the timeout handle*/
+				s.Close()
+			}
+			return 0, nil, err
+		}
+		switch pt {
+		case base.PING:
+			// Respond to a ping with a pong.
+			err := func() error {
+				w, err := s.nextWriter(ft, base.PONG)
+				if err != nil {
+					return err
+				}
+				// echo
+				_, err = io.Copy(w, r)
+				w.Close() // unlocks the wrapped connection's FrameWriter
+				r.Close() // unlocks the wrapped connection's FrameReader
+				return err
+			}()
+			if err != nil {
+				s.Close()
+				return 0, nil, err
+			}
+			// Read another frame.
+			if err := s.setDeadline(); err != nil {
+				s.Close()
+				return 0, nil, err
+			}
+		case base.CLOSE:
+			r.Close() // unlocks the wrapped connection's FrameReader
+			s.Close()
+			return 0, nil, io.EOF
+		case base.MESSAGE:
+			// Caller must Close the ReadCloser to unlock the connection's
+			// FrameReader when finished reading.
+			return FrameType(ft), r, nil
+		default:
+			// Unknown packet type. Close reader and try again.
+			r.Close()
+		}
+	}
+}
+
 // NextWriter attempts to obtain a WriteCloser from the session's connection.
 // When finished writing, the caller MUST Close the WriteCloser to unlock the
 // connection's FrameWriter.
@@ -149,6 +203,23 @@ func (s *session) RemoteHeader() http.Header {
 	s.upgradeLocker.RLock()
 	defer s.upgradeLocker.RUnlock()
 	return s.conn.RemoteHeader()
+}
+
+func (s *session) nextReaderTimeout(mills int) (base.FrameType, base.PacketType, io.ReadCloser, error) {
+	for {
+		s.upgradeLocker.RLock()
+		conn := s.conn
+		s.upgradeLocker.RUnlock()
+		ft, pt, r, err := conn.NextReaderTimeout(mills)
+		if err != nil {
+
+			if op, ok := err.(payload.Error); ok && op.Temporary() {
+				continue
+			}
+			return 0, 0, nil, err
+		}
+		return ft, pt, r, nil
+	}
 }
 
 func (s *session) nextReader() (base.FrameType, base.PacketType, io.ReadCloser, error) {
