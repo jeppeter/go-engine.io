@@ -1,9 +1,9 @@
 package packet
 
 import (
-	"io"
-
+	"fmt"
 	"github.com/jeppeter/go-engine.io/base"
+	"io"
 )
 
 type decoder struct {
@@ -17,7 +17,9 @@ func newDecoder(r FrameReader) *decoder {
 }
 
 func (e *decoder) NextReaderTimeout(mills int) (base.FrameType, base.PacketType, io.ReadCloser, error) {
+	fmt.Println("before packet/decoder.go NextReaderTimeout")
 	ft, r, err := e.r.NextReaderTimeout(mills)
+	fmt.Println("after packet/decoder.go NextReaderTimeout", err)
 	if err != nil {
 		return 0, 0, nil, err
 	}

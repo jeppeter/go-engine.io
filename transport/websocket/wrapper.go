@@ -28,7 +28,9 @@ func newWrapper(conn *websocket.Conn) wrapper {
 
 func (w wrapper) NextReaderTimeout(mills int) (base.FrameType, io.ReadCloser, error) {
 	w.readLocker.Lock()
+	fmt.Println("before websocket/wrapper.go NextReaderTimeout")
 	typ, r, err := w.Conn.NextReaderTimeout(mills)
+	fmt.Println("after websocket/wrapper.go NextReaderTimeout", err)
 	// The wrapper remains locked until the returned ReadCloser is Closed.
 	if err != nil {
 		w.readLocker.Unlock()

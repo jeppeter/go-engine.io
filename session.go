@@ -1,6 +1,7 @@
 package engineio
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -125,7 +126,9 @@ func (s *session) NextReaderTimeout(mills int) (FrameType, io.ReadCloser, error)
 	var neterr net.Error
 	var ok bool
 	for {
+		fmt.Println("before session.go NextReaderTimeout")
 		ft, pt, r, err := s.nextReaderTimeout(mills)
+		fmt.Println("after session.go NextReaderTimeout", err)
 		if err != nil {
 			neterr, ok = err.(net.Error)
 			if !ok || !neterr.Timeout() {

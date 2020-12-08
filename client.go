@@ -2,6 +2,7 @@ package engineio
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -111,7 +112,9 @@ func (c *client) Close() error {
 
 func (c *client) NextReaderTimeout(mills int) (FrameType, io.ReadCloser, error) {
 	for {
+		fmt.Println("before client.go NextReaderTimeout")
 		ft, pt, r, err := c.conn.NextReaderTimeout(mills)
+		fmt.Println("after client.go NextReaderTimeout", err)
 		if err != nil {
 			return 0, nil, err
 		}
